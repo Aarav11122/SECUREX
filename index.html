@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SECUREX | Cybersecurity Scanner</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,Arial,sans-serif;
+}
+
+body{
+    background:#03070d;
+    color:#eaf7ff;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+      linear-gradient(rgba(0,220,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,220,255,.025) 1px,transparent 1px);
+    background-size:35px 35px;
+}
+
+header{
+    height:75px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    border-bottom:1px solid #13283b;
+    background:#050b13dd;
+    backdrop-filter:blur(10px);
+}
+
+.logo{
+    color:#20ddff;
+    font-size:27px;
+    font-weight:900;
+    letter-spacing:4px;
+    text-shadow:0 0 20px #20ddff66;
+}
+
+.online{
+    color:#4dff9a;
+    font-size:13px;
+}
+
+.online span{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    background:#4dff9a;
+    border-radius:50%;
+    box-shadow:0 0 12px #4dff9a;
+    margin-right:7px;
+}
+
+main{
+    width:92%;
+    max-width:1200px;
+    margin:auto;
+    padding:45px 0;
+}
+
+.hero{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.shield{
+    width:95px;
+    height:95px;
+    margin:0 auto 20px;
+    border:2px solid #20ddff;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:43px;
+    box-shadow:0 0 30px #20ddff55;
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+    50%{
+        box-shadow:0 0 55px #20ddff99;
+    }
+}
+
+.hero h1{
+    font-size:50px;
+    letter-spacing:7px;
+}
+
+.hero h1 span{
+    color:#20ddff;
+}
+
+.hero p{
+    margin-top:10px;
+    color:#7892a8;
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:20px;
+}
+
+.panel{
+    background:linear-gradient(145deg,#091522,#050b12);
+    border:1px solid #18344b;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 20px 60px #0009;
+}
+
+.panel-title{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:22px;
+}
+
+.panel-title h2{
+    font-size:19px;
+}
+
+.badge{
+    color:#20ddff;
+    border:1px solid #20ddff55;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:11px;
+}
+
+.tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+}
+
+.tab{
+    padding:9px 13px;
+    border:1px solid #1b3a50;
+    background:#07101a;
+    color:#8ca4b7;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.tab.active{
+    background:#0b3442;
+    color:#20ddff;
+    border-color:#20ddff;
+}
+
+input[type="text"]{
+    width:100%;
+    padding:15px;
+    border-radius:10px;
+    border:1px solid #1d3b52;
+    background:#03080e;
+    color:white;
+    outline:none;
+    margin-bottom:12px;
+}
+
+input[type="file"]{
+    width:100%;
+    padding:13px;
+    border:1px dashed #28536c;
+    border-radius:10px;
+    background:#03080e;
+    color:#8da6b9;
+    margin-bottom:12px;
+}
+
+.scan-btn{
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:10px;
+    background:#20ddff;
+    color:#001016;
+    font-weight:900;
+    cursor:pointer;
+    letter-spacing:1px;
+}
+
+.scan-btn:hover{
+    box-shadow:0 0 25px #20ddff77;
+}
+
+.console{
+    height:205px;
+    overflow:auto;
+    background:#020509;
+    border:1px solid #102331;
+    border-radius:10px;
+    padding:15px;
+    margin-top:20px;
+    font-family:monospace;
+    font-size:12px;
+    color:#65d9e8;
+}
+
+.line{
+    margin-bottom:9px;
+}
+
+.result{
+    display:none;
+    margin-top:18px;
+    padding:18px;
+    border-radius:12px;
+    border:1px solid;
+}
+
+.result.safe{
+    border-color:#42ff9a;
+    background:#062016;
+}
+
+.result.warning{
+    border-color:#ffd35a;
+    background:#211a06;
+}
+
+.result.danger{
+    border-color:#ff465e;
+    background:#25070c;
+}
+
+.result h3{
+    margin-bottom:10px;
+}
+
+.risk{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.circle{
+    width:155px;
+    height:155px;
+    border-radius:50%;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    border:8px solid #20ddff;
+    box-shadow:0 0 35px #20ddff44;
+}
+
+.circle strong{
+    font-size:38px;
+}
+
+.circle small{
+    color:#7892a8;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.stat{
+    padding:15px;
+    background:#06101a;
+    border:1px solid #153043;
+    border-radius:10px;
+}
+
+.stat small{
+    color:#668095;
+}
+
+.stat b{
+    display:block;
+    margin-top:6px;
+}
+
+.features{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-top:20px;
+}
+
+.feature{
+    background:#07111c;
+    border:1px solid #173348;
+    padding:20px;
+    border-radius:14px;
+}
+
+.feature div{
+    font-size:25px;
+    margin-bottom:10px;
+}
+
+.feature h3{
+    font-size:15px;
+    color:#20ddff;
+}
+
+.feature p{
+    color:#71879b;
+    font-size:12px;
+    margin-top:7px;
+}
+
+footer{
+    text-align:center;
+    color:#4d6478;
+    padding:30px;
+    font-size:12px;
+}
+
+@media(max-width:800px){
+    .dashboard{
+        grid-template-columns:1fr;
+    }
+
+    .features{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .hero h1{
+        font-size:38px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">SECUREX</div>
+    <div class="online">
+        <span></span>SECURITY ENGINE ONLINE
+    </div>
+</header>
+
+<main>
+
+<section class="hero">
+
+    <div class="shield">🛡️</div>
+
+    <h1>SECURE<span>X</span></h1>
+
+    <p>Smart Security Before You Trust</p>
+
+</section>
+
+<section class="dashboard">
+
+<!-- SCANNER -->
+
+<div class="panel">
+
+    <div class="panel-title">
+        <h2>Threat Analysis Center</h2>
+        <div class="badge">LIVE</div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="setMode('url',this)">
+            🔗 URL
+        </button>
+
+        <button class="tab" onclick="setMode('file',this)">
+            📁 FILE
+        </button>
+    </div>
+
+    <div id="urlInput">
+
+        <input
+            id="url"
+            type="text"
+            placeholder="Enter website URL..."
+        >
+
+    </div>
+
+    <div id="fileInput" style="display:none">
+
+        <input
+            id="file"
+            type="file"
+        >
+
+    </div>
+
+    <button class="scan-btn" onclick="startScan()">
+        ⚡ START SECURITY SCAN
+    </button>
+
+    <div class="console" id="console">
+
+        <div class="line">> SECUREX engine initialized...</div>
+        <div class="line">> Waiting for target...</div>
+
+    </div>
+
+    <div id="result" class="result"></div>
+
+</div>
+
+
+<!-- RISK PANEL -->
+
+<div class="panel">
+
+    <div class="panel-title">
+        <h2>Risk Monitor</h2>
+        <div class="badge">SECURE</div>
+    </div>
+
+    <div class="risk">
+
+        <div class="circle" id="riskCircle">
+
+            <strong id="riskNumber">0</strong>
+
+            <small>RISK SCORE</small>
+
+        </div>
+
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <small>HTTPS</small>
+            <b id="https">---</b>
+        </div>
+
+        <div class="stat">
+            <small>DOMAIN</small>
+            <b id="domain">---</b>
+        </div>
+
+        <div class="stat">
+            <small>THREATS</small>
+            <b id="threats">---</b>
+        </div>
+
+        <div class="stat">
+            <small>STATUS</small>
+            <b id="status">READY</b>
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<section class="features">
+
+    <div class="feature">
+        <div>🔗</div>
+        <h3>URL Analysis</h3>
+        <p>Checks URL structure and suspicious patterns.</p>
+    </div>
+
+    <div class="feature">
+        <div>📁</div>
+        <h3>File Analysis</h3>
+        <p>Calculates a cryptographic file fingerprint.</p>
+    </div>
+
+    <div class="feature">
+        <div>🧠</div>
+        <h3>Risk Engine</h3>
+        <p>Combines security indicators into a risk score.</p>
+    </div>
+
+    <div class="feature">
+        <div>🚨</div>
+        <h3>Threat Warning</h3>
+        <p>Warns users when suspicious indicators appear.</p>
+    </div>
+
+</section>
+
+</main>
+
+<footer>
+    SECUREX • Cybersecurity Prototype • No files are modified or executed
+</footer>
+
+
+<script>
+
+let mode="url";
+
+
+function setMode(selected,button){
+
+    mode=selected;
+
+    document.querySelectorAll(".tab")
+    .forEach(x=>x.classList.remove("active"));
+
+    button.classList.add("active");
+
+    document.getElementById("urlInput").style.display=
+        mode==="url" ? "block":"none";
+
+    document.getElementById("fileInput").style.display=
+        mode==="file" ? "block":"none";
+}
+
+
+function log(message){
+
+    const consoleBox=document.getElementById("console");
+
+    const line=document.createElement("div");
+
+    line.className="line";
+
+    line.innerText="> "+message;
+
+    consoleBox.appendChild(line);
+
+    consoleBox.scrollTop=consoleBox.scrollHeight;
+}
+
+
+function wait(ms){
+    return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+
+async function startScan(){
+
+    const result=document.getElementById("result");
+
+    result.style.display="none";
+
+    document.getElementById("status").innerText="SCANNING";
+
+    document.getElementById("threats").innerText="ANALYZING";
+
+    document.getElementById("riskNumber").innerText="0";
+
+    document.getElementById("console").innerHTML="";
+
+    log("SECUREX analysis started...");
+
+    await wait(400);
+
+    if(mode==="url"){
+
+        const url=document.getElementById("url").value.trim();
+
+        if(!url){
+            alert("Enter a URL first.");
+            return;
+        }
+
+        log("Parsing URL...");
+
+        await wait(500);
+
+        log("Checking HTTPS configuration...");
+
+        await wait(500);
+
+        log("Analyzing domain structure...");
+
+        await wait(500);
+
+        log("Searching for suspicious URL indicators...");
+
+        await wait(500);
+
+        analyzeURL(url);
+
+    }
+
+    else{
+
+        const file=document.getElementById("file").files[0];
+
+        if(!file){
+            alert("Select a file first.");
+            return;
+        }
+
+        log("Reading file metadata...");
+
+        await wait(500);
+
+        log("Generating SHA-256 fingerprint...");
+
+        const hash=await sha256(file);
+
+        await wait(500);
+
+        log("SHA-256 generated.");
+
+        log(hash);
+
+        await wait(500);
+
+        analyzeFile(file,hash);
+    }
+}
+
+
+function analyzeURL(input){
+
+    let value=input;
+
+    if(!/^https?:\/\//i.test(value)){
+        value="https://"+value;
+    }
+
+    let parsed;
+
+    try{
+        parsed=new URL(value);
+    }
+    catch{
+        showResult(
+            "danger",
+            92,
+            "🔴 INVALID / HIGH RISK",
+            "The entered URL could not be parsed safely."
+        );
+        return;
+    }
+
+    let score=0;
+    let reasons=[];
+
+    const hostname=parsed.hostname.toLowerCase();
+
+    if(parsed.protocol==="https:"){
+        document.getElementById("https").innerText="YES";
+    }
+    else{
+        document.getElementById("https").innerText="NO";
+        score+=20;
+        reasons.push("No HTTPS connection");
+    }
+
+    document.getElementById("domain").innerText=hostname;
+
+    const suspiciousWords=[
+        "phishing",
+        "malware",
+        "virus",
+        "login-verify",
+        "free-money",
+        "account-alert",
+        "verify-now"
+    ];
+
+    suspiciousWords.forEach(word=>{
+
+        if(value.toLowerCase().includes(word)){
+            score+=25;
+            reasons.push("Suspicious keyword: "+word);
+        }
+
+    });
+
+    if(hostname.includes("@")){
+        score+=25;
+        reasons.push("Suspicious URL structure");
+    }
+
+    if(hostname.length>45){
+        score+=10;
+        reasons.push("Unusually long domain");
+    }
+
+    score=Math.min(score,100);
+
+    document.getElementById("threats").innerText=
+        score>60 ? "HIGH" :
+        score>20 ? "MEDIUM" :
+        "LOW";
+
+    if(score>=60){
+
+        showResult(
+            "danger",
+            score,
+            "🔴 HIGH RISK",
+            reasons.length
+            ? reasons.join(" • ")
+            : "Multiple suspicious indicators detected."
+        );
+
+    }
+    else if(score>=20){
+
+        showResult(
+            "warning",
+            score,
+            "🟡 SUSPICIOUS",
+            reasons.join(" • ")
+        );
+
+    }
+    else{
+
+        showResult(
+            "safe",
+            score,
+            "🟢 LOW RISK",
+            "No obvious suspicious URL indicators were detected by this prototype."
+        );
+
+    }
+
+}
+
+
+async function analyzeFile(file,hash){
+
+    let score=0;
+
+    const reasons=[];
+
+    const extension=file.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+    if(extension==="exe"){
+        score+=10;
+        reasons.push("Executable file");
+    }
+
+    if(extension==="apk"){
+        score+=5;
+        reasons.push("Android application package");
+    }
+
+    if(file.size>100*1024*1024){
+        score+=10;
+        reasons.push("Large file size");
+    }
+
+    document.getElementById("domain").innerText=
+        extension.toUpperCase();
+
+    document.getElementById("https").innerText="N/A";
+
+    document.getElementById("threats").innerText=
+        score>20 ? "REVIEW":"LOW";
+
+    showResult(
+        score>=20 ? "warning":"safe",
+        score,
+        score>=20 ? "🟡 REVIEW REQUIRED":"🟢 LOW RISK",
+        reasons.length
+        ? reasons.join(" • ")
+        : "No basic local indicators were detected."
+    );
+
+}
+
+
+async function sha256(file){
+
+    const buffer=await file.arrayBuffer();
+
+    const hashBuffer=
+        await crypto.subtle.digest("SHA-256",buffer);
+
+    const hashArray=
+        Array.from(new Uint8Array(hashBuffer));
+
+    return hashArray
+        .map(b=>b.toString(16).padStart(2,"0"))
+        .join("");
+
+}
+
+
+function showResult(type,score,title,message){
+
+    const result=document.getElementById("result");
+
+    result.className="result "+type;
+
+    result.innerHTML=`
+
+        <h3>${title}</h3>
+
+        <p>
+            <b>Risk Score:</b> ${score}/100
+        </p>
+
+        <br>
+
+        <p>${message}</p>
+
+        <br>
+
+        <p>
+            <b>Recommendation:</b>
+            ${
+                type==="danger"
+                ?"Do not open or install until independently verified."
+                :
+                type==="warning"
+                ?"Verify the source before proceeding."
+                :
+                "Continue only if you trust the source."
+            }
+        </p>
+
+    `;
+
+    result.style.display="block";
+
+    document.getElementById("riskNumber").innerText=score;
+
+    document.getElementById("status").innerText=
+        type==="danger" ? "THREAT":
+        type==="warning" ? "REVIEW":
+        "SAFE";
+
+
+}
+
+</script>
+
+</body>
+</html>
